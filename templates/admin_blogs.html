@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 mb-3">Blog Management</h1>
+        <p class="lead">Create, edit and manage blog content</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Mobile Toggle Button - Only visible on small screens -->
+    <div class="col-12 d-md-none mb-3">
+        <button id="toggle-form-btn" class="btn btn-primary w-100">
+            {% if editing %}View Blogs{% else %}Add New Blog{% endif %}
+        </button>
+    </div>
+
+    <!-- Blog Form - Left Column -->
+    <div id="blog-form-container" class="col-md-5 {% if editing %}{% else %}d-none d-md-block{% endif %}">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    {% if editing %}
+                    <i class="fas fa-edit me-2"></i> Edit Blog Post
+                    {% else %}
+                    <i class="fas fa-plus me-2"></i> Create New Blog Post
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data"
+                      action="{% if editing %}{{ url_for('edit_blog', blog_id=blog_id) }}{% else %}{{ url_for('admin_blogs') }}{% endif %}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.title.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.featured_image.label(class="form-label") }}
+                        <div class="input-group">
+                            {{ form.featured_image(class="form-control") }}
+                            <button id="preview-image-btn" type="button" class="btn btn-outline-secondary">Preview</button>
+                        </div>
+                        {% if form.featured_image.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.featured_image.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Enter a URL for the featured image (optional)</small>
+                        <div id="image-preview" class="mt-2"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.image_file.label(class="form-label") }}
+                        {{ form.image_file(class="form-control") }}
+                        {% if form.image_file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.image_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Or upload an image directly (JPG, PNG, GIF)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.content.label(class="form-label") }}
+                        {{ form.content(class="form-control", rows=10) }}
+                        {% if form.content.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.content.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">You can use HTML formatting in your content</small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                    
+                    {% if editing %}
+                    <div class="d-grid mt-2">
+                        <a href="{{ url_for('admin_blogs') }}" class="btn btn-outline-secondary">Cancel Edit</a>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Blog List - Right Column -->
+    <div id="blog-list-container" class="col-md-7 {% if editing %}d-none d-md-block{% endif %}">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i> All Blog Posts</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if blogs %}
+                                {% for blog in blogs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('blog_post', blog_id=blog.id) }}" class="text-decoration-none" target="_blank">
+                                            {{ blog.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ blog.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('edit_blog', blog_id=blog.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form action="{{ url_for('delete_blog', blog_id=blog.id) }}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger delete-btn">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No blog posts available.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

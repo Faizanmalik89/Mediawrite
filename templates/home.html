@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-12 text-center">
+        <h1 class="display-4 mb-4">Welcome to Content CMS</h1>
+        <p class="lead">A platform for sharing blogs and videos with the world</p>
+    </div>
+</div>
+
+<!-- Dashboard Stats -->
+<div class="row mb-5">
+    <h2 class="mb-4">Website Statistics</h2>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card users-card">
+            <i class="fas fa-users text-primary"></i>
+            <h3>{{ stats.total_users }}</h3>
+            <p>Registered Users</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card blogs-card">
+            <i class="fas fa-blog text-success"></i>
+            <h3>{{ stats.total_blogs }}</h3>
+            <p>Blog Posts</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card videos-card">
+            <i class="fas fa-video text-warning"></i>
+            <h3>{{ stats.total_videos }}</h3>
+            <p>Videos</p>
+        </div>
+    </div>
+    
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card views-card">
+            <i class="fas fa-eye text-danger"></i>
+            <h3>{{ stats.total_views }}</h3>
+            <p>Total Views</p>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Blogs -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Recent Blog Posts</h2>
+            <a href="{{ url_for('blogs') }}" class="btn btn-outline-primary">View All Blogs</a>
+        </div>
+        
+        <div class="row">
+            {% if recent_blogs %}
+                {% for blog in recent_blogs %}
+                <div class="col-md-4 mb-4">
+                    <div class="card blog-card h-100">
+                        {% if blog.featured_image %}
+                        <img src="{{ blog.featured_image }}" class="card-img-top blog-image" alt="{{ blog.title }}">
+                        {% else %}
+                        <div class="card-img-top blog-image bg-secondary d-flex align-items-center justify-content-center">
+                            <i class="fas fa-newspaper fa-3x text-light"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ blog.title }}</h5>
+                            <p class="card-text">{{ blog.content|truncate(100) }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ blog.created_at.strftime('%B %d, %Y') }}</small>
+                                <a href="{{ url_for('blog_post', blog_id=blog.id) }}" class="btn btn-sm btn-primary">Read More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No blog posts available yet. Check back soon!
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Videos -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Recent Videos</h2>
+            <a href="{{ url_for('videos') }}" class="btn btn-outline-primary">View All Videos</a>
+        </div>
+        
+        <div class="row">
+            {% if recent_videos %}
+                {% for video in recent_videos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card video-card h-100">
+                        {% if video.thumbnail %}
+                        <img src="{{ video.thumbnail }}" class="card-img-top video-thumbnail" alt="{{ video.title }}">
+                        {% else %}
+                        <div class="card-img-top video-thumbnail bg-secondary d-flex align-items-center justify-content-center">
+                            <i class="fas fa-video fa-3x text-light"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ video.title }}</h5>
+                            <p class="card-text">{{ video.description|truncate(100) if video.description else "No description available." }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ video.created_at.strftime('%B %d, %Y') }}</small>
+                                <a href="{{ url_for('videos') }}#video-{{ video.id }}" class="btn btn-sm btn-primary">Watch Video</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No videos available yet. Check back soon!
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- About Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">About Content CMS</h2>
+                <p>Content CMS is a modern content management system designed to help creators share their blogs and videos with the world. Our platform offers:</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-pen-fancy fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h5>Blog Publishing</h5>
+                                <p>Share your thoughts and stories through our easy-to-use blog platform.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-film fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h5>Video Hosting</h5>
+                                <p>Upload and share your videos with embedded support for major platforms.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas fa-users fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h5>User Community</h5>
+                                <p>Connect with other content creators and build your audience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth') }}" class="btn btn-primary">Join Us Today</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

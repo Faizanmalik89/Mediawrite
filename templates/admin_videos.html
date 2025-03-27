@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 mb-3">Video Management</h1>
+        <p class="lead">Create, edit and manage video content</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Mobile Toggle Button - Only visible on small screens -->
+    <div class="col-12 d-md-none mb-3">
+        <button id="toggle-video-form-btn" class="btn btn-danger w-100">
+            {% if editing %}View Videos{% else %}Add New Video{% endif %}
+        </button>
+    </div>
+
+    <!-- Video Form - Left Column -->
+    <div id="video-form-container" class="col-md-5 {% if editing %}{% else %}d-none d-md-block{% endif %}">
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    {% if editing %}
+                    <i class="fas fa-edit me-2"></i> Edit Video
+                    {% else %}
+                    <i class="fas fa-plus me-2"></i> Add New Video
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data"
+                      action="{% if editing %}{{ url_for('edit_video', video_id=video_id) }}{% else %}{{ url_for('admin_videos') }}{% endif %}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.title.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows=3) }}
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.description.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.video_url.label(class="form-label") }}
+                        <div class="input-group">
+                            {{ form.video_url(class="form-control", id="video_url") }}
+                            <button id="preview-video-btn" type="button" class="btn btn-outline-secondary">Preview</button>
+                        </div>
+                        {% if form.video_url.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.video_url.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">
+                            Supported platforms: YouTube, Vimeo, Google Drive
+                        </small>
+                        <div id="video-preview" class="mt-2"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.video_file.label(class="form-label") }}
+                        {{ form.video_file(class="form-control") }}
+                        {% if form.video_file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.video_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Or upload a video file directly (MP4, WebM, MOV)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.thumbnail.label(class="form-label") }}
+                        {{ form.thumbnail(class="form-control") }}
+                        {% if form.thumbnail.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.thumbnail.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Enter a URL for the video thumbnail (optional)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.thumbnail_file.label(class="form-label") }}
+                        {{ form.thumbnail_file(class="form-control") }}
+                        {% if form.thumbnail_file.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.thumbnail_file.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Or upload a thumbnail image directly (JPG, PNG, GIF)</small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-danger") }}
+                    </div>
+                    
+                    {% if editing %}
+                    <div class="d-grid mt-2">
+                        <a href="{{ url_for('admin_videos') }}" class="btn btn-outline-secondary">Cancel Edit</a>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Video List - Right Column -->
+    <div id="video-list-container" class="col-md-7 {% if editing %}d-none d-md-block{% endif %}">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i> All Videos</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date Added</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if videos %}
+                                {% for video in videos %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('videos') }}#video-{{ video.id }}" class="text-decoration-none" target="_blank">
+                                            {{ video.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ video.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('edit_video', video_id=video.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form action="{{ url_for('delete_video', video_id=video.id) }}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger delete-btn">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No videos available.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

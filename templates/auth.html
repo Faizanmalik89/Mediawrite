@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <h1 class="display-5 mb-4">Account Access</h1>
+        
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i> Sign In</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {{ login_form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                {{ login_form.email.label(class="form-label") }}
+                                {{ login_form.email(class="form-control", placeholder="Enter your email") }}
+                                {% if login_form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in login_form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ login_form.password.label(class="form-label") }}
+                                {{ login_form.password(class="form-control", placeholder="Enter your password") }}
+                                {% if login_form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in login_form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {{ login_form.submit(class="btn btn-primary w-100") }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> Sign Up</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {{ register_form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                {{ register_form.username.label(class="form-label") }}
+                                {{ register_form.username(class="form-control", placeholder="Choose a username") }}
+                                {% if register_form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in register_form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ register_form.email.label(class="form-label") }}
+                                {{ register_form.email(class="form-control", placeholder="Enter your email") }}
+                                {% if register_form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in register_form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ register_form.password.label(class="form-label") }}
+                                {{ register_form.password(class="form-control", placeholder="Create a password") }}
+                                {% if register_form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in register_form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                {{ register_form.confirm_password.label(class="form-label") }}
+                                {{ register_form.confirm_password(class="form-control", placeholder="Confirm password") }}
+                                {% if register_form.confirm_password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in register_form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            {{ register_form.submit(class="btn btn-success w-100") }}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-3"><i class="fas fa-info-circle me-2"></i> Account Information</h4>
+                    <p>Sign up to access additional features:</p>
+                    <ul>
+                        <li>Comment on blogs and videos</li>
+                        <li>Save your favorite content</li>
+                        <li>Get notified about new content</li>
+                    </ul>
+                    <p class="mb-0">
+                        <i class="fas fa-shield-alt me-1"></i> Your information is secure and we respect your privacy.
+                        See our <a href="{{ url_for('terms') }}">Terms and Policies</a> for more details.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
